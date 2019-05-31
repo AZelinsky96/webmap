@@ -23,7 +23,7 @@
             <meta name="viewport" content="width=device-width,
                 initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
             <style>
-                #map_a250efb5a2374ecfa4a2b95154d61536 {
+                #map_a0a79004388a4cc989a73a540d3d0ec2 {
                     position: relative;
                     width: 100.0%;
                     height: 100.0%;
@@ -35,13 +35,13 @@
 </head>
 <body>    
     
-            <div class="folium-map" id="map_a250efb5a2374ecfa4a2b95154d61536" ></div>
+            <div class="folium-map" id="map_a0a79004388a4cc989a73a540d3d0ec2" ></div>
         
 </body>
 <script>    
     
-            var map_a250efb5a2374ecfa4a2b95154d61536 = L.map(
-                "map_a250efb5a2374ecfa4a2b95154d61536",
+            var map_a0a79004388a4cc989a73a540d3d0ec2 = L.map(
+                "map_a0a79004388a4cc989a73a540d3d0ec2",
                 {
                     center: [40.2171, -74.7429],
                     crs: L.CRS.EPSG3857,
@@ -55,9 +55,39 @@
 
         
     
-            var tile_layer_19400756e01d4f6c9b89608819b4118a = L.tileLayer(
+            var tile_layer_ae8b1ff5c99e4478bd6da5fd169c5c48 = L.tileLayer(
                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
-            ).addTo(map_a250efb5a2374ecfa4a2b95154d61536);
+            ).addTo(map_a0a79004388a4cc989a73a540d3d0ec2);
         
+    
+            var feature_group_697bbcfcec954c42a273366d8874d4d7 = L.featureGroup(
+                {}
+            ).addTo(map_a0a79004388a4cc989a73a540d3d0ec2);
+        
+    
+            var marker_8d7268e7d08d460197feffd1fce84421 = L.marker(
+                [40.2171, -74.76],
+                {}
+            ).addTo(feature_group_697bbcfcec954c42a273366d8874d4d7);
+        
+    
+            var icon_baf6fb524c394e92a004ec3e553da77a = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "green", "prefix": "glyphicon"}
+            );
+            marker_8d7268e7d08d460197feffd1fce84421.setIcon(icon_baf6fb524c394e92a004ec3e553da77a);
+        
+    
+        var popup_d3a47132b9b34476be64eca587437f0e = L.popup({"maxWidth": "100%"});
+
+        
+            var html_38b46d4686af46a786f2ee53379442a3 = $(`<div id="html_38b46d4686af46a786f2ee53379442a3" style="width: 100.0%; height: 100.0%;">Trenton!</div>`)[0];
+            popup_d3a47132b9b34476be64eca587437f0e.setContent(html_38b46d4686af46a786f2ee53379442a3);
+        
+
+        marker_8d7268e7d08d460197feffd1fce84421.bindPopup(popup_d3a47132b9b34476be64eca587437f0e)
+        ;
+
+        
+    
 </script>
