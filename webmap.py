@@ -60,13 +60,15 @@ def scraper():
     df[headers[1]] = lat
     df[headers[2]] = long
 
-    df.to_csv("State_Lat_Long.csv")
+    df.to_csv("State_Lat_Long.csv", index = False)
     return df
+
+
 
 def main():
 
     ## Creating the base map object
-    map_ =  folium.Map(location = [40.2171,-74.7429], zoom_start= 5, tiles = 'OpenStreetMap')
+    map_ =  folium.Map(location = [40.2171,-74.7429], zoom_start= 5, tiles = 'stamenwatercolor')
 
 
     def map_save(map_obj = map_, open_ = True):
@@ -76,7 +78,7 @@ def main():
         if open_ == True:
             webbrowser.open_new_tab(os.path.realpath("webmap1.html"))
 
-
+# -------------------------------------------------------------------------------------
 
     ## Adding children to the map: marker
 
@@ -98,20 +100,40 @@ def main():
         df = scraper()
         print("File Created and loaded")
 
-    for i,k in df.iterrows():
-        fg1.add_child(folium.Marker(location = [k[2], k[3]], popup = "{}".format(k[1]), icon = folium.Icon(color = 'blue')))
+    ## This is a csv I created when scraping and editing the json in the AddingPopulationToJson python File
+    population_df = pd.read_csv("State_Population.csv")
 
-    map_.add_child(fg1)
+    df['State'] = df["State"].apply(lambda x: x.strip())
+
+
+    #print(df)
+    #print(population_df)
+
+    df = pd.merge(df, population_df, left_on = "State", right_on = "State")
+    
+
+#    df.drop(["Unamed: 0_x", "Unamed: 0_y"], axis = 1, inplace = True)
+    for i,k in df.iterrows():
+        fg1.add_child(folium.Marker(location = [k[1], k[2]], tooltip = "State: {} - Click For Detail".format(k[0]), popup = "POP: {}   POP_DENSITY: {} (p/m^2)".format(k[3], k[4]), icon = folium.Icon(color = 'blue')))
+
+
+
+# -------------------------------------------------------------------------------------
+
 
     ## Reading in the state capital data, and appending it to the web map
     state_df = pd.read_json("us_state_capitals.json", 'index')
+
     ## Creating a group to add the next batch of data into
     fg2 = folium.FeatureGroup(name = 'StateCapitals')
     ## Iterating over the rows in dataframe and appending it to the map
     for i, k in state_df.iterrows():
-        fg2.add_child(folium.Marker(location = [k[1], k[2]], popup = "{}".format(k[0]), icon = folium.Icon(color = 'green')))
+        fg2.add_child(folium.CircleMarker(location = [k[1], k[2]], popup = "{}".format(k[0]), tooltip = "State Capital - Click for Detail",  color = 'green', fill_color = 'green', fill_opacity = 1))
     ## Adding all of the edits to the file
-    map_.add_child(fg2)
+
+
+
+# -------------------------------------------------------------------------------------
 
     ## Playing around with volcano data.
     fg3 = folium.FeatureGroup(name = "Volcanoes")
@@ -145,18 +167,49 @@ def main():
 
 
     for i, k in df_volcanoes.iterrows():
-        color = step_finder(float(k[5]), step1, step2, step3)
-        fg3.add_child(folium.Marker(location = [k[8], k[9]],
-                                    popup = "Volcano: {} \nStatus: {} \nElevation: {}".format(k[2], k[4], k[5]),
-                                    icon = folium.Icon(color = color)))
+        color_ = step_finder(float(k[5]), step1, step2, step3)
+        fg3.add_child(folium.CircleMarker(location = [k[8], k[9]],
+                                    popup = "NAME: {} \n\nTYPE: {} \n\nELEVATION: {}".format(k[2], k[4], k[5]),
+                                    tooltip = "Volcano! - Click for Detail",
+                                    fill_color = color_ ,
+                                     color = "grey",
+                                     fill_opacity = 0.8))
 
+
+
+# -------------------------------------------------------------------------------------
+## Adding polygon layer to the map
+
+    ## Loading in the geojson data:
+
+    fg4 = folium.FeatureGroup(name = "us_polygon_layer")
+
+    fg4.add_child(folium.GeoJson(data = open("world.json", "r", encoding = "utf-8-sig").read()))
+
+
+
+
+
+## Adding the State Poly to the map:
+
+    fg5 = folium.FeatureGroup(name = "us_state_poly")
+
+    fg5.add_child(folium.GeoJson( data = open("state_updated.json", "r").read(),
+                                  style_function =lambda x: {"fillColor" : "green" if int(x['properties']['Pop']) < 500000
+                                  else "yellow" if 500000 <= int(x['properties']['Pop']) < 10000000 else "orange" if 10000000 <= int(x['properties']['Pop'])  < 25000000 else "red"},
+                                    ))
+
+
+
+## Inserting them by layer:
+    map_.add_child(fg4)
+    map_.add_child(fg5)
+    map_.add_child(fg1)
+    map_.add_child(fg2)
     map_.add_child(fg3)
 
 
-
-
-
-
+# -------------------------------------------------------------------------------------
     ## Saving and plotting the map
     open_map = input("Open map? [y/n] ")
     if open_map.lower() == 'y':
