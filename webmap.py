@@ -80,15 +80,9 @@ def main():
 
 # -------------------------------------------------------------------------------------
 
-    ## Adding children to the map: marker
-
-    fg = folium.FeatureGroup(name = "First Markers")
-    fg.add_child(folium.Marker(location = [40.2171, -74.76], popup  = "Trenton!", icon = folium.Icon(color = 'green')))
-
-    map_.add_child(fg)
     ## Adding multiple markers
 
-    fg1 = folium.FeatureGroup(name = "MultiMark")
+    fg1 = folium.FeatureGroup(name = "State_Markers")
 
     ## Reading in the state lat long dataframe
     try:
@@ -110,7 +104,7 @@ def main():
     #print(population_df)
 
     df = pd.merge(df, population_df, left_on = "State", right_on = "State")
-    
+
 
 #    df.drop(["Unamed: 0_x", "Unamed: 0_y"], axis = 1, inplace = True)
     for i,k in df.iterrows():
@@ -125,7 +119,7 @@ def main():
     state_df = pd.read_json("us_state_capitals.json", 'index')
 
     ## Creating a group to add the next batch of data into
-    fg2 = folium.FeatureGroup(name = 'StateCapitals')
+    fg2 = folium.FeatureGroup(name = 'State_Capitals')
     ## Iterating over the rows in dataframe and appending it to the map
     for i, k in state_df.iterrows():
         fg2.add_child(folium.CircleMarker(location = [k[1], k[2]], popup = "{}".format(k[0]), tooltip = "State Capital - Click for Detail",  color = 'green', fill_color = 'green', fill_opacity = 1))
@@ -182,7 +176,7 @@ def main():
 
     ## Loading in the geojson data:
 
-    fg4 = folium.FeatureGroup(name = "us_polygon_layer")
+    fg4 = folium.FeatureGroup(name = "Country_Polygon")
 
     fg4.add_child(folium.GeoJson(data = open("world.json", "r", encoding = "utf-8-sig").read()))
 
@@ -192,12 +186,13 @@ def main():
 
 ## Adding the State Poly to the map:
 
-    fg5 = folium.FeatureGroup(name = "us_state_poly")
+    fg5 = folium.FeatureGroup(name = "United_State_Population_Chloro_layer")
 
     fg5.add_child(folium.GeoJson( data = open("state_updated.json", "r").read(),
                                   style_function =lambda x: {"fillColor" : "green" if int(x['properties']['Pop']) < 500000
                                   else "yellow" if 500000 <= int(x['properties']['Pop']) < 10000000 else "orange" if 10000000 <= int(x['properties']['Pop'])  < 25000000 else "red"},
                                     ))
+
 
 
 
@@ -208,6 +203,8 @@ def main():
     map_.add_child(fg2)
     map_.add_child(fg3)
 
+## Adding layer control to the map_
+    map_.add_child(folium.LayerControl())
 
 # -------------------------------------------------------------------------------------
     ## Saving and plotting the map
